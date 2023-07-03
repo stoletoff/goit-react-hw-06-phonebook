@@ -24,7 +24,6 @@ const schema = yup.object().shape({
     .min(7),
 });
 
-
 export const ContactForm = ({ addContact }) => {
   const {
     register,
@@ -33,7 +32,7 @@ export const ContactForm = ({ addContact }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-  });;
+  });
 
   const onSubmit = data => {
     addContact(data.name, data.number);
