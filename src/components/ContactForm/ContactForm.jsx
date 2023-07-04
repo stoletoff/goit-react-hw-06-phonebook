@@ -3,6 +3,9 @@ import { nanoid } from 'nanoid';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/selector';
+import { addContacts } from 'redux/contactsSlice';
 import {
   FormStyle,
   InputName,
@@ -24,7 +27,20 @@ const schema = yup.object().shape({
     .min(7),
 });
 
-export const ContactForm = ({ addContact }) => {
+const formattedNumber = number => {
+  let formattedNumber = number.substring(0, 3) + '-';
+  for (let i = 3; i < number.length; i += 1) {
+    if ((i - 3) % 2 === 0 && i !== 3) {
+      formattedNumber += '-';
+    }
+    formattedNumber += number[i];
+  }
+  return formattedNumber;
+};
+
+export const ContactForm = () => {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -37,6 +53,18 @@ export const ContactForm = ({ addContact }) => {
   const onSubmit = data => {
     addContact(data.name, data.number);
     reset();
+  };
+
+  const addContact = (name, number) => {
+    const formatted = formattedNumber(number);
+    const repeatName = contacts.some(
+      element => element.name.toLowerCase() === name.toLowerCase()
+    );
+    if (repeatName) {
+      return alert(`${name} allready at contact list`);
+    }
+
+    dispatch(addContacts(name, formatted));
   };
 
   return (

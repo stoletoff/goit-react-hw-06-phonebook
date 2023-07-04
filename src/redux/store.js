@@ -1,15 +1,24 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { reducer } from './reducer';
 
-const increment = createAction('Myvalue/increment');
-const decrement = createAction('Myvalue/decrement');
-const myReducer = createReducer(10, {
-  [increment]: (state, action) => state + action.payload,
-  [decrement]: (state, action) => state - action.payload,
-});
+import {
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 
 export const store = configureStore({
-  reducer: {
-    myValue: myReducer,
-  },
+  reducer,
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
+
+export const persistor = persistStore(store);
